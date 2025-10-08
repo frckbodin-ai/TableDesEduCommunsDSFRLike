@@ -34,14 +34,16 @@ const Tooltip: React.FC<TooltipProps> = ({ tooltipData }) => {
     return null;
   }
 
+  const isRel = content.type === 'REL';
+
   return (
     <div
       ref={tooltipRef}
-      className="fr-p-2w fr-background-contrast--grey fr-shadow-lg"
+      className="fr-card fr-card--sm fr-card--no-border fr-shadow"
       style={{ 
         position: 'fixed',
-        zIndex: 50,
-        maxWidth: '24rem',
+        zIndex: 1000,
+        maxWidth: '28rem',
         top: position.top, 
         left: position.left, 
         opacity: visible ? 1 : 0, 
@@ -49,12 +51,27 @@ const Tooltip: React.FC<TooltipProps> = ({ tooltipData }) => {
         transition: 'opacity 0.2s',
       }}
     >
-      <h4 className="fr-h6 fr-mb-2w" style={{color: 'var(--text-active-blue-france)'}}>{content.name}</h4>
-      <div className="fr-text--sm">
-        <p className="fr-mb-1w"><span className="fr-text--bold">Code:</span> {content.code}</p>
-        <p className="fr-mb-1w"><span className="fr-text--bold">Type:</span> {content.type}</p>
-        <p className="fr-mb-1w"><span className="fr-text--bold">Description:</span> {content.desc}</p>
-        <p className="fr-text--italic"><span className="fr-text--bold fr-text--mention--grey">Exemples:</span> {content.examples}</p>
+      <div className="fr-card__body">
+        <div className="fr-card__content">
+          <h4 className={`fr-card__title fr-mb-2w ${isRel ? 'fr-text-title--blue-france' : 'fr-text-title--purple-glycine'}`}>
+            {content.name}
+          </h4>
+          <div className="fr-text--sm">
+            <div className="fr-mb-1w">
+              <span className={`fr-badge fr-badge--sm ${isRel ? 'fr-badge--blue-france' : 'fr-badge--purple-glycine'}`}>
+                {content.code}
+              </span>
+              <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
+                {content.type}
+              </span>
+            </div>
+            <p className="fr-mb-1w fr-text--sm"><strong>Description :</strong> {content.desc}</p>
+            <p className="fr-text--xs fr-text-mention--grey">
+              <span className="fr-icon-lightbulb-line fr-icon--sm" aria-hidden="true"></span>
+              {' '}{content.examples}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -8,30 +8,43 @@ interface AnalysisProps {
   onReset: () => void;
 }
 
-const EPoCScale: React.FC<{ score: number; classification: string }> = ({ score, classification }) => {
+const EPoCScale: React.FC<{ score: number; classification: string; isEducommun: boolean }> = ({ score, classification, isEducommun }) => {
     const epocLevels = ["Fermé", "Semi-ouvert", "Minimale", "Partielle", "Semi-complète", "Totale"];
     const levelIndex = Math.floor(score);
     const levelLabel = score === 5 ? epocLevels[5] : epocLevels[levelIndex] || '';
 
-    const classificationTags: Record<string, string> = {
-        'REL': 'fr-tag--blue-france',
-        'Educommun': 'fr-tag--purple-glycine',
-        'Hybride (REL & Educommun)': 'fr-tag--grey',
-        'Indéterminé': 'fr-tag--grey'
+    const classificationConfig: Record<string, {tag: string; icon: string}> = {
+        'REL': { tag: 'fr-badge--blue-france', icon: 'fr-icon-book-line' },
+        'Commun': { tag: 'fr-badge--purple-glycine', icon: 'fr-icon-team-line' },
+        'Hybride (REL & Commun)': { tag: 'fr-badge--info', icon: 'fr-icon-exchange-line' },
+        'Indéterminé': { tag: 'fr-badge--grey', icon: 'fr-icon-question-line' }
     };
 
-    return (
-        <div className="fr-border-bottom--grey fr-pb-3w fr-mb-3w fr-text-center">
-            <h3 className="fr-h4">EPoC</h3>
-            <p className="fr-text--sm fr-mb-2w">Échelle de Positionnement des Communs</p>
+    const config = classificationConfig[classification] || classificationConfig['Indéterminé'];
 
-            <p className="fr-display--md fr-mb-1v">{score.toFixed(2)}<span className="fr-text--lead"> / 5</span></p>
-            <p className="fr-text--lg fr-text--bold fr-mb-2w">{levelLabel}</p>
-            <p>
-                <span className={`fr-tag ${classificationTags[classification]}`}>
-                    {classification}
-                </span>
-            </p>
+    return (
+        <div className="fr-highlight fr-mb-3w">
+            <h3 className="fr-h5 fr-mb-2w">EPoC</h3>
+            <p className="fr-text--sm fr-mb-3w">Échelle de Positionnement des Communs</p>
+
+            <div className="fr-text-center">
+                <p className="fr-display-xl fr-mb-1v">{score.toFixed(2)}<span className="fr-text--lead"> / 5</span></p>
+                <p className="fr-text--lg fr-text--bold fr-mb-2w">{levelLabel}</p>
+                <p>
+                    <span className={`fr-badge ${config.tag}`}>
+                        <span className={`${config.icon} fr-icon--sm`} aria-hidden="true"></span>
+                        {' '}{classification}
+                    </span>
+                </p>
+                {isEducommun && (
+                    <p className="fr-mt-2w">
+                        <span className="fr-badge fr-badge--success">
+                            <span className="fr-icon-award-line fr-icon--sm" aria-hidden="true"></span>
+                            {' '}Qualifié Educommun
+                        </span>
+                    </p>
+                )}
+            </div>
         </div>
     );
 };
@@ -60,32 +73,34 @@ const Analysis: React.FC<AnalysisProps> = ({ selectedData, onReset }) => {
     return sum / values.length;
   };
 
-  const { epocScore, classification } = useMemo(() => {
+  const { epocScore, classification, isEducommun } = useMemo(() => {
     const relCount = Object.keys(relData).length;
     const communCount = Object.keys(communData).length;
+    const currentEpocScore = calculateAverage(selectedData);
     
-    let classification = 'Indéterminé';
+    let currentClassification = 'Indéterminé';
     if (relCount > 0 && communCount === 0) {
-        classification = 'REL';
+        currentClassification = 'REL';
     } else if (relCount === 0 && communCount > 0) {
-        classification = 'Educommun';
+        currentClassification = 'Commun';
     } else if (relCount > 0 && communCount > 0) {
         const relScore = calculateAverage(relData);
         const communScore = calculateAverage(communData);
         if (relScore > communScore * 1.15) {
-            classification = 'REL';
+            currentClassification = 'REL';
         } else if (communScore > relScore * 1.15) {
-            classification = 'Educommun';
+            currentClassification = 'Commun';
         } else {
-            classification = 'Hybride (REL & Educommun)';
+            currentClassification = 'Hybride (REL & Commun)';
         }
     }
     
     return {
-        epocScore: calculateAverage(selectedData),
-        classification,
+        epocScore: currentEpocScore,
+        classification: currentClassification,
+        isEducommun: currentEpocScore >= 2 && selectionCount > 0,
     };
-  }, [selectedData, relData, communData]);
+  }, [selectedData, relData, communData, selectionCount]);
 
   return (
     <div className="fr-card">
@@ -109,7 +124,7 @@ const Analysis: React.FC<AnalysisProps> = ({ selectedData, onReset }) => {
           
             {selectionCount > 0 ? (
                 <div className="fr-mt-4w">
-                <EPoCScale score={epocScore} classification={classification} />
+                <EPoCScale score={epocScore} classification={classification} isEducommun={isEducommun} />
                 
                 <div className="fr-grid-row fr-grid-row--gutters">
                     {Object.keys(relData).length > 0 && (
@@ -122,7 +137,7 @@ const Analysis: React.FC<AnalysisProps> = ({ selectedData, onReset }) => {
                     )}
                     {Object.keys(communData).length > 0 && (
                     <div className="fr-col-12">
-                        <h3 className="fr-h6 fr-text-center fr-mb-2w" style={{color: 'var(--text-active-purple-glycine)'}}>Analyse Commun (Gouvernance)</h3>
+                        <h3 className="fr-h6 fr-text-center fr-mb-2w" style={{color: 'var(--text-active-purple-glycine)'}}>Analyse Commun (Organisation)</h3>
                         <div style={{width: '100%', height: '320px'}}>
                         <RadarAnalysisChart selectedData={communData} color="var(--background-action-high-purple-glycine-active)" name="Niveau Commun" />
                         </div>

@@ -45,9 +45,22 @@ const Header: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {/* Ajout d'un séparateur visuel */}
             <div className="fr-container fr-py-4w">
+                <div className="fr-mb-3w">
+                    <div className="fr-callout">
+                        <h3 className="fr-callout__title">
+                            <span className="fr-icon-information-line" aria-hidden="true"></span>
+                            Comment utiliser ce tableau ?
+                        </h3>
+                        <p className="fr-callout__text">
+                            Cliquez sur les cases correspondant à votre projet. Votre analyse s'affichera automatiquement à droite.
+                        </p>
+                    </div>
+                </div>
+
                 <div className="fr-mb-4w">
-                    <h3 className="fr-h6 fr-text-center">Niveaux d'ouverture</h3>
+                    <h3 className="fr-h6 fr-mb-2w fr-text-center">Niveaux d'ouverture</h3>
                     <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
                         <LegendItem level={0} text="Fermé" />
                         <LegendItem level={1} text="Semi-ouvert" />
@@ -60,15 +73,15 @@ const Header: React.FC = () => {
 
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
                     <div className="fr-col-auto">
-                        <p className="fr-tag fr-tag--blue-france">
+                        <p className="fr-badge fr-badge--blue-france">
                             <span aria-hidden="true" className="fr-icon-book-line fr-icon--sm fr-mr-1v"></span>
-                            REL (Ressource)
+                            REL - Ressource
                         </p>
                     </div>
                     <div className="fr-col-auto">
-                        <p className="fr-tag fr-tag--purple-glycine">
+                        <p className="fr-badge fr-badge--purple-glycine">
                              <span aria-hidden="true" className="fr-icon-team-line fr-icon--sm fr-mr-1v"></span>
-                            Commun (Gouvernance & Communauté)
+                            Commun - Gouvernance
                         </p>
                     </div>
                 </div>

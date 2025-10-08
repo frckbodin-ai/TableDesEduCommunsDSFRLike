@@ -10,43 +10,116 @@
 
     <style>
       .dsfr-selected-cell {
-        outline: 3px solid var(--border-active-blue-france) !important;
-        outline-offset: 1px;
+        outline: 4px solid var(--border-active-blue-france) !important;
+        outline-offset: -2px;
+        box-shadow: 0 0 0 4px rgba(0, 0, 145, 0.15);
+        animation: pulse-selection 2s ease-in-out infinite;
       }
+      
       .periodic-table-cell {
-        min-height: 6rem; /* 96px */
+        min-height: 6rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         padding: 0.5rem;
         text-align: center;
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
         cursor: pointer;
+        position: relative;
+        height: 100%;
       }
+      
       .periodic-table-cell:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-9);
-        z-index: 10;
+        transform: scale(1.08);
+        box-shadow: var(--shadow-lifted);
+        z-index: 15;
       }
+      
+      .periodic-table-cell:focus-visible {
+        outline: 3px solid var(--border-active-blue-france);
+        outline-offset: 2px;
+        z-index: 15;
+      }
+      
       .table-header-sticky {
         position: sticky;
         top: 0;
-        z-index: 20;
+        z-index: 25;
+        box-shadow: var(--shadow-1);
       }
+      
       .table-level-sticky {
          position: sticky;
          left: 0;
-         z-index: 10;
+         z-index: 20;
+         box-shadow: var(--shadow-1);
       }
+      
       .periodic-table-wrapper {
         overflow-x: auto;
+        border-radius: 0.5rem;
       }
+      
       .periodic-table {
         border-collapse: separate;
-        border-spacing: 2px;
+        border-spacing: 3px;
         min-width: 1400px;
         width: 100%;
+      }
+
+      @keyframes pulse-selection {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(0, 0, 145, 0.15); }
+        50% { box-shadow: 0 0 0 6px rgba(0, 0, 145, 0.25); }
+      }
+      
+      @media print {
+        @page {
+          size: A1 landscape;
+          margin: 1cm;
+        }
+        body {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          background-color: #fff;
+        }
+        .no-print, .fr-header__brand, .fr-header__service, .fr-skiplinks, footer {
+          display: none !important;
+        }
+        main .fr-col-xl-4 {
+          display: none !important;
+        }
+        main .fr-col-xl-8 {
+          width: 100% !important;
+          flex: 0 0 100% !important;
+          max-width: 100% !important;
+          padding: 0 !important;
+        }
+        .periodic-table-wrapper {
+          overflow: visible;
+          box-shadow: none;
+          border: none;
+          padding: 0 !important;
+        }
+        .table-header-sticky,
+        .table-level-sticky {
+          position: static;
+        }
+        .periodic-table-cell:hover {
+          transform: none;
+          box-shadow: none;
+        }
+        .dsfr-selected-cell {
+          outline: 2px solid black !important;
+          outline-offset: 0;
+          animation: none;
+        }
+        .fr-header {
+          box-shadow: none;
+        }
+        .fr-card, .periodic-table-wrapper {
+            background: transparent !important;
+        }
       }
     </style>
 
